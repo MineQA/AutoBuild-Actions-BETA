@@ -22,15 +22,15 @@ on:
         default: ''
 ### 控制部分结束 ( 以上内容请保持不变 )
 
-  #push:
-  #  branches: 
-  #    - master
+  push:
+    branches: 
+      - master
 
   schedule:
     - cron: 0 5 1,15,25 * *
 
-  #watch:
-  #  types: [started]
+  watch:
+    types: [Clash]
 
 ### 环境变量设置
 env:
@@ -142,7 +142,7 @@ jobs:
       if: env.CACHE_ACCELERATE == 'true'
       uses: klever1988/cachewrtbuild@main
       with:
-        ccache: false
+        ccache: true
         toolchain: true
         skip: true
         clean: true
@@ -171,6 +171,7 @@ jobs:
     - name: Pre-download Libraries
       run: |
         cd openwrt
+        curl -o ./scripts/feeds/packages/multimedia/aliyundrive-webdav/Makefile https://raw.githubusercontent.com/coolsnowwolf/packages/aea60b5432fad984c0a4013bad0f0c5e00dcd115/multimedia/aliyundrive-webdav/Makefile
         ./scripts/feeds install -a
         make defconfig
         make download -j8
