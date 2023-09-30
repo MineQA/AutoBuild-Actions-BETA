@@ -120,8 +120,6 @@ jobs:
         sudo -E apt-get update
         sudo -E apt-get -y install busybox build-essential cmake asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion flex uglifyjs git-core gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libreadline-dev libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint ccache curl wget vim nano python2.7 python3 python3-pip python3-ply haveged lrzsz device-tree-compiler scons antlr3 gperf intltool mkisofs rsync
         sudo timedatectl set-timezone "Asia/Shanghai"
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y source $HOME/.cargo/env
-        sudo rustup update
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
         if [ "${{ env.DELETE_USELESS_FILES }}" == true ]
@@ -174,6 +172,9 @@ jobs:
       run: |
         cd openwrt
         ./scripts/feeds install -a
+        curl -o ./feeds/packages/lang/rust/rust-values.mk https://raw.githubusercontent.com/coolsnowwolf/packages/lang/rust/rust-values.mk
+        curl -o ./feeds/packages/lang/rust/Makefile https://raw.githubusercontent.com/coolsnowwolf/packages/lang/rust/Makefile
+        curl -o ./feeds/packages/lang/rust/patches/0001-Update-xz2-and-use-it-static.patch https://raw.githubusercontent.com/coolsnowwolf/packages/lang/rust/patches/0001-Update-xz2-and-use-it-static.patch        
         make defconfig
         make download -j8
 
