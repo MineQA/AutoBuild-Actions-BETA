@@ -172,6 +172,7 @@ jobs:
       run: |
         cd openwrt
         ./scripts/feeds install -a
+        curl -o ./feeds/packages/net/curl/Makefile https://raw.githubusercontent.com/coolsnowwolf/packages/2564394f86d4960183a10af1b5dbbb1d455c4e70/net/curl/Makefile
         make defconfig
         make download -j8
 
