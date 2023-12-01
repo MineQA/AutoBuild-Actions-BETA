@@ -171,7 +171,6 @@ jobs:
     - name: Pre-download Libraries
       run: |
         cd openwrt
-        curl -o ./feeds/packages/multimedia/aliyundrive-webdav/Makefile https://raw.githubusercontent.com/coolsnowwolf/packages/aea60b5432fad984c0a4013bad0f0c5e00dcd115/multimedia/aliyundrive-webdav/Makefile
         ./scripts/feeds install -a
         make defconfig
         make download -j8
