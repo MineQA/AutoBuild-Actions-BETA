@@ -8,22 +8,6 @@ name: NEWIFI D2
 
 on:
   repository_dispatch:
-<<<<<<< HEAD
-  workflow_dispatch:
-    inputs:
-      Tempoary_IP:
-        description: '固件 IP 地址 [可选]'
-        default: '192.168.1.1'
-      Tempoary_CONFIG:
-        description: '配置文件 [可选]'
-        default: ''
-      Tempoary_FLAG:
-        description: '固件标签 [可选]'
-        default: 'FULL'
-### 控制部分结束 ( 以上内容请保持不变 )
-
-=======
->>>>>>> 84e54a25f44a76fbc622112540742e204a96bcac
   #push:
   #  branches: 
   #    - master
@@ -182,13 +166,12 @@ jobs:
         cd openwrt
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-        curl -o ./feeds/packages/multimedia/aliyundrive-webdav/Makefile https://raw.githubusercontent.com/coolsnowwolf/packages/aea60b5432fad984c0a4013bad0f0c5e00dcd115/multimedia/aliyundrive-webdav/Makefile
 
     - name: Accelerate
       if: env.CACHE_ACCELERATE == 'true'
       uses: klever1988/cachewrtbuild@main
       with:
-        ccache: true
+        ccache: false
         toolchain: true
         skip: true
         clean: true
