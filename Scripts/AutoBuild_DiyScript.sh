@@ -33,20 +33,20 @@ Firmware_Diy() {
 
 	# 可用预设变量, 其他可用变量请参考运行日志
 	# ${OP_AUTHOR}			OpenWrt 源码作者
-	# ${OP_REPO}			OpenWrt 仓库名称
+	# ${OP_REPO}				OpenWrt 仓库名称
 	# ${OP_BRANCH}			OpenWrt 源码分支
-	# ${TARGET_PROFILE}	设备名称
-	# ${TARGET_BOARD}		设备架构
-	# ${TARGET_FLAG}		固件名称后缀
+	# ${TARGET_PROFILE}		设备名称
+	# ${TARGET_BOARD}			设备架构
+	# ${TARGET_FLAG}			固件名称后缀
 
 	# ${WORK}				OpenWrt 源码位置
-	# ${CONFIG_FILE}		使用的配置文件名称
-	# ${FEEDS_CONF}		OpenWrt 源码目录下的 feeds.conf.default 文件
-	# ${CustomFiles}		仓库中的 /CustomFiles 绝对路径
-	# ${Scripts}			仓库中的 /Scripts 绝对路径
-	# ${FEEDS_LUCI}		OpenWrt 源码目录下的 package/feeds/luci 目录
+	# ${CONFIG_FILE}			使用的配置文件名称
+	# ${FEEDS_CONF}			OpenWrt 源码目录下的 feeds.conf.default 文件
+	# ${CustomFiles}			仓库中的 /CustomFiles 绝对路径
+	# ${Scripts}				仓库中的 /Scripts 绝对路径
+	# ${FEEDS_LUCI}			OpenWrt 源码目录下的 package/feeds/luci 目录
 	# ${FEEDS_PKG}			OpenWrt 源码目录下的 package/feeds/packages 目录
-	# ${BASE_FILES}		OpenWrt 源码目录下的 package/base-files/files 目录
+	# ${BASE_FILES}			OpenWrt 源码目录下的 package/base-files/files 目录
 
 	case "${OP_AUTHOR}/${OP_REPO}:${OP_BRANCH}" in
 	coolsnowwolf/lede:master)
@@ -61,13 +61,13 @@ then
 fi
 exit 0
 EOF
-		sed -i "s?/bin/login?/usr/libexec/login.sh?g" ${FEEDS_PKG}/ttyd/files/ttyd.config
+		# sed -i "s?/bin/login?/usr/libexec/login.sh?g" ${FEEDS_PKG}/ttyd/files/ttyd.config
 		# sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 		# sed -i '/uci commit luci/i\uci set luci.main.mediaurlbase="/luci-static/argon-mod"' $(PKG_Finder d package default-settings)/files/zzz-default-settings
 
 		rm -r ${FEEDS_LUCI}/luci-theme-argon*
 		AddPackage git themes luci-theme-argon jerrykuku 18.06
-		AddPackage svn other luci-app-openclash vernesong/OpenClash/branches/dev
+		AddPackage git other OpenClash vernesong dev
 		AddPackage git lean luci-app-argon-config jerrykuku master
 		AddPackage git other helloworld fw876 main
 		AddPackage git themes luci-theme-neobird thinktip main
@@ -91,7 +91,28 @@ EOF
 			rm -rf packages/lean/autocore
 			AddPackage git lean autocore-modify Hyy2001X master
 			sed -i -- 's:/bin/ash:'/bin/bash':g' ${BASE_FILES}/etc/passwd
-			# sed -i "s?6.0?5.19?g" ${WORK}/target/linux/x86/Makefile
+			
+			singbox_version="1.7.2"
+			hysteria_version="2.2.2"
+			naiveproxy_version="119.0.6045.66-1"
+			
+			wget https://github.com/SagerNet/sing-box/releases/download/v${singbox_version}/sing-box-${singbox_version}-linux-amd64.tar.gz -P /tmp
+			wget https://github.com/apernet/hysteria/releases/download/app%2Fv${hysteria_version}/hysteria-linux-amd64 -P /tmp
+			wget https://github.com/klzgrad/naiveproxy/releases/download/v${naiveproxy_version}/naiveproxy-v${naiveproxy_version}-openwrt-x86_64.tar.xz -P /tmp
+			wget https://raw.githubusercontent.com/vernesong/OpenClash/core/master/dev/clash-linux-amd64.tar.gz -O /tmp/clash-dev.tar.gz
+			
+			tar -xvzf /tmp/sing-box-${singbox_version}-linux-amd64.tar.gz -C /tmp
+			Copy /tmp/sing-box-${singbox_version}-linux-amd64/sing-box ${BASE_FILES}/usr/bin
+			
+			Copy /tmp/hysteria-linux-amd64 ${BASE_FILES}/usr/bin hysteria
+			
+			tar -xvf /tmp/naiveproxy-v${naiveproxy_version}-openwrt-x86_64.tar.xz -C /tmp
+			Copy /tmp/naiveproxy-v${naiveproxy_version}-openwrt-x86_64/naive ${BASE_FILES}/usr/bin
+			
+			tar -xvzf /tmp/clash-dev.tar.gz -C /tmp
+			Copy /tmp/clash ${BASE_FILES}/etc/openclash/core
+			
+			chmod 777 ${BASE_FILES}/usr/bin/sing-box ${BASE_FILES}/usr/bin/hysteria ${BASE_FILES}/usr/bin/naive ${BASE_FILES}/etc/openclash/core
 		;;
 		xiaomi_redmi-router-ax6s)
 			AddPackage git passwall-depends openwrt-passwall-packages xiaorouji main
@@ -100,7 +121,8 @@ EOF
 		esac
 	;;
 	immortalwrt/immortalwrt*)
-		sed -i "s?/bin/login?/usr/libexec/login.sh?g" ${FEEDS_PKG}/ttyd/files/ttyd.config
+		:
+		# sed -i "s?/bin/login?/usr/libexec/login.sh?g" ${FEEDS_PKG}/ttyd/files/ttyd.config
 	;;
 	esac
 }
